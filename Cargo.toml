@@ -2,7 +2,7 @@
 name = "read_smbios"
 version = "0.1.0"
 authors = ["keith"]
-edition = "2020"
+edition = "2018"
 
 [dependencies]
 winapi = { version = "0.3.8", features = ["sysinfoapi"] }
