@@ -15,7 +15,7 @@ pub fn read_smbios() -> Vec<u8> {
         {
             sz = GetSystemFirmwareTable(rsmb_sig, rsmb_tbl_id, NULL, 0);
         };
-        println!("Need size {}", sz);
+        //println!("Need size {}", sz);
 
         let mut vec : Vec<u8> = Vec::with_capacity(sz as usize);
         unsafe { vec.set_len(sz as usize); }
@@ -24,7 +24,7 @@ pub fn read_smbios() -> Vec<u8> {
         {
             read_sz = GetSystemFirmwareTable(rsmb_sig, rsmb_tbl_id, vec.as_mut_ptr() as *mut c_void, sz);
         }
-        println!("Read size {}", read_sz);
+        //println!("Read size {}", read_sz);
         assert!(sz == read_sz);
         
         // Return buffer
