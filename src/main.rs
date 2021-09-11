@@ -22,8 +22,6 @@ struct Type0 {
 }
 
 fn main() {
-    println!("Hello, world!");
-
     let data = read_smbios();
 
     //println!("Data size: {}", data.len());
@@ -34,16 +32,17 @@ fn main() {
     // should we find end of strings first, capture strings, then populate structure?
 
     let beg = data[8] as usize;
-    let temp = Type0 {
+    let _temp = Type0 {
         Type : data[beg],
         Len : data[beg + 1],
-        Handle : (data[beg + 2] | (data[beg + 3] << 1)) as u16,
+        Handle : (data[beg + 2] as u32 | ((data[beg + 3] as u32) << 8)) as u16,
         Vendor : "".to_string(),
         BIOSVersion : "".to_string(),
-        BIOSStartAddrSeg : 0u16,
+        BIOSStartAddrSeg : (data[beg + 6] as u32 | ((data[beg + 7] as u32) << 8)) as u16,
         BIOSRelDate : "".to_string(),
-        BIOSRomSz : 0u8,
-        BIOSChar : 0u64,
+        BIOSRomSz : data[beg + 9],
+        BIOSChar : (data[beg + 0xA] as u64 | ((data[beg + 0xB] as u64) << 8) | ((data[beg + 0xC] as u64) << 16) | ((data[beg + 0xD] as u64) << 24)
+            | ((data[beg + 0xE] as u64) << 32)| ((data[beg + 0xF] as u64) << 40)| ((data[beg + 0x10] as u64) << 48)| ((data[beg + 0x11] as u64) << 56)),
         BIOSCharExt : 0u16,
         SystemBIOSMajRel : 0u8,
         SystemBIOSMinRel : 0u8,
@@ -56,4 +55,13 @@ fn main() {
     // for b in data.iter() {
     //     println!("{:02x}", b);
     // }
+
+    // print type 0
+    println!("Table: Type0");
+    println!("\tType   : {}", _temp.Type);
+    println!("\tLen    : {}", _temp.Len);
+    println!("\tHandle : {}", _temp.Handle);
+    println!("\tBIOSStartAddrSeg : {}", _temp.BIOSStartAddrSeg);
+    println!("\tBIOSRomSz : {:#02x}", _temp.BIOSRomSz);
+    println!("\tBiosChar : {:#016x}", _temp.BIOSChar);
 }
