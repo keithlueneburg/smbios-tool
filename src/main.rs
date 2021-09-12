@@ -1,4 +1,6 @@
 use crate::win_smbios::win_smbios::read_smbios;
+use crate::util::util::le_to_u16;
+use crate::util::util::le_to_u64;
 
 mod win_smbios;
 mod util;
@@ -36,20 +38,19 @@ fn main() {
     let _temp = Type0 {
         table_type : data[beg],
         len : data[beg + 1],
-        handle : (data[beg + 2] as u32 | ((data[beg + 3] as u32) << 8)) as u16,
+        handle : le_to_u16(&data[beg + 2 .. beg + 4]), 
         vendor : "".to_string(),
         bios_version : "".to_string(),
-        bios_start_addr_seg : (data[beg + 6] as u32 | ((data[beg + 7] as u32) << 8)) as u16,
+        bios_start_addr_seg : le_to_u16(&data[beg + 6 .. beg + 8]),
         bios_rel_date : "".to_string(),
         bios_rom_sz : data[beg + 9],
-        bios_char : (data[beg + 0xA] as u64 | ((data[beg + 0xB] as u64) << 8) | ((data[beg + 0xC] as u64) << 16) | ((data[beg + 0xD] as u64) << 24)
-            | ((data[beg + 0xE] as u64) << 32)| ((data[beg + 0xF] as u64) << 40)| ((data[beg + 0x10] as u64) << 48)| ((data[beg + 0x11] as u64) << 56)),
+        bios_char : le_to_u64(&data[beg + 0xA .. beg + 0x12]),
         bios_char_ext : 0u16,
-        system_bios_maj_rel : 0u8,
-        system_bios_min_rel : 0u8,
-        emb_ctrlr_fw_maj_rel : 0u8,
-        emb_ctrlr_fw_min_rel : 0u8,
-        ext_bios_rom_sz : 0u16
+        system_bios_maj_rel : data[beg + 0x14],
+        system_bios_min_rel : data[beg + 0x15],
+        emb_ctrlr_fw_maj_rel : data[beg + 0x16],
+        emb_ctrlr_fw_min_rel : data[beg + 0x17],
+        ext_bios_rom_sz : 0u16 // Dev box is SMBIOS 2.7 so ignore for now
     };
 
     println!("SMBIOS Version: {}.{}", maj, min);
@@ -64,5 +65,9 @@ fn main() {
     println!("\tHandle : {}", _temp.handle);
     println!("\tBIOSStartAddrSeg : {}", _temp.bios_start_addr_seg);
     println!("\tBIOSRomSz : {:#02x}", _temp.bios_rom_sz);
-    println!("\tBiosChar : {:#016x}", _temp.bios_char);
+    println!("\tBIOSChar : {:#016x}", _temp.bios_char);
+    println!("\tSysBIOSMajRel : {}", _temp.system_bios_maj_rel);
+    println!("\tSysBIOSMinRel : {}", _temp.system_bios_min_rel);
+    println!("\tEmbCtrlrMajRel : {}", _temp.emb_ctrlr_fw_maj_rel);
+    println!("\tEmbCtrlrMinRel : {}", _temp.emb_ctrlr_fw_min_rel);
 }
