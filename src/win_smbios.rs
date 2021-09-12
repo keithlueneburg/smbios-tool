@@ -5,7 +5,7 @@ pub mod win_smbios {
     use winapi::ctypes::c_void;
     use winapi::um::sysinfoapi::GetSystemFirmwareTable;
 
-pub fn read_smbios() -> Vec<u8> {
+    pub fn read_smbios() -> Vec<u8> {
         let rsmb_sig : DWORD = 0x52534d42; // 'RSMB'
         let rsmb_tbl_id : DWORD = 0x00000000;
         
