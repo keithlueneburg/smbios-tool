@@ -53,6 +53,15 @@ fn main() {
         ext_bios_rom_sz : 0u16 // Dev box is SMBIOS 2.7 so ignore for now
     };
 
+    // TODO
+    // 1. Get strings
+    // 2. Get dependent fields (bios_char_ext byte count depends on table length)
+    // 3. Only get fields supported by current SMBIOS version.. maybe.. Might make sense to wait for dynamic table definition and storage structure
+    // 4. 
+    //   a. Make to u16/u32/u64 function safer by copying to array
+    //   b. Don't copy bytes if possible while keeping compile time check
+    // 5. Move table defs to input file
+
     println!("SMBIOS Version: {}.{}", maj, min);
     // for b in data.iter() {
     //     println!("{:02x}", b);
