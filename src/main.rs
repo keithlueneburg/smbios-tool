@@ -53,6 +53,28 @@ fn main() {
         ext_bios_rom_sz : 0u16 // Dev box is SMBIOS 2.7 so ignore for now
     };
 
+    // find start of string section
+    let table_length_bytes = (_temp.len + 0x18) as usize; // magic number depends on SMBIOS version
+    let mut pos = beg + table_length_bytes;
+
+    // get first string
+    let vendor:String = String::from("");
+    let mut ch = data[pos] as char;
+
+    while ch != 0x00 as char {
+        println!("{}", ch);
+        pos += 1;
+        ch = data[pos] as char;
+
+        if ch == 0x00 as char {
+            // Advance if string terminates.
+            // String section terminating 2nd 0x00 will get caught by loop
+            pos += 1; 
+            ch = data[pos] as char;
+            println!("===============");
+        }
+    }
+
     // TODO
     // 1. Get strings
     // 2. Get dependent fields (bios_char_ext byte count depends on table length)
