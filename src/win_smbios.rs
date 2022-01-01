@@ -5,6 +5,16 @@ pub mod win_smbios {
     use winapi::ctypes::c_void;
     use winapi::um::sysinfoapi::GetSystemFirmwareTable;
 
+    // Return data format [https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemfirmwaretable]
+    // struct RawSMBIOSData
+    // {
+    //     BYTE    Used20CallingMethod;
+    //     BYTE    SMBIOSMajorVersion;
+    //     BYTE    SMBIOSMinorVersion;
+    //     BYTE    DmiRevision;
+    //     DWORD    Length;
+    //     BYTE    SMBIOSTableData[]; // <-- Start of table structures, not entry point structure
+    // };
     pub fn read_smbios() -> Vec<u8> {
         let rsmb_sig : DWORD = 0x52534d42; // 'RSMB'
         let rsmb_tbl_id : DWORD = 0x00000000;
@@ -15,7 +25,6 @@ pub mod win_smbios {
         {
             sz = GetSystemFirmwareTable(rsmb_sig, rsmb_tbl_id, NULL, 0);
         };
-        //println!("Need size {}", sz);
 
         let mut vec : Vec<u8> = Vec::with_capacity(sz as usize);
         unsafe { vec.set_len(sz as usize); }
@@ -24,7 +33,6 @@ pub mod win_smbios {
         {
             read_sz = GetSystemFirmwareTable(rsmb_sig, rsmb_tbl_id, vec.as_mut_ptr() as *mut c_void, sz);
         }
-        //println!("Read size {}", read_sz);
         assert!(sz == read_sz);
         
         // Return buffer

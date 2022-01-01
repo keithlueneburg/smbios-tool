@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub mod util {
     // TODO: Make these type safe
     //       Might need to copy to array and pass sized array? 
