@@ -4,8 +4,9 @@ use crate::util::util::le_to_u64;
 
 mod win_smbios;
 mod util;
-//pub use win_smbios;
+mod tables;
 
+#[allow(dead_code)]
 struct Type0 {
     table_type : u8,
     len : u8,
@@ -35,30 +36,8 @@ fn main() {
     let beg = 8 as usize; 
     let table_len = data[beg + 1];
 
-    // Get strings
-    let table_length_bytes = (table_len) as usize; 
-    let mut pos = beg + table_length_bytes;
-
-    let mut buf = String::from("");
-    let mut strings : Vec<String> = Vec::new();
-
-    let mut ch = data[pos] as char;
-    while ch != 0x00 as char {
-        buf.push(ch);
-
-        pos += 1;
-        ch = data[pos] as char;
-
-        if ch == 0x00 as char {
-            // 0 indicates end of string
-            // 2nd 0 terminating table string section will get caught by loop
-            strings.push(buf.clone());
-            buf.clear();
-
-            pos += 1; 
-            ch = data[pos] as char;
-        }
-    }
+    // Get strings for this Type 0 table
+    let strings = tables::get_table_strings(data.as_slice(), beg + table_len as usize);
 
     let _temp = Type0 {
         table_type : data[beg],
@@ -75,7 +54,7 @@ fn main() {
         system_bios_min_rel : data[beg + 0x15],
         emb_ctrlr_fw_maj_rel : data[beg + 0x16],
         emb_ctrlr_fw_min_rel : data[beg + 0x17],
-        ext_bios_rom_sz : 0u16 // Dev box is SMBIOS 2.7 so ignore for now
+        ext_bios_rom_sz : 0u16 // Dev box was SMBIOS 2.7 so ignoring for now
     };
 
     // TODO
