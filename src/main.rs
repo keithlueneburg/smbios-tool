@@ -6,25 +6,6 @@ mod win_smbios;
 mod util;
 mod tables;
 
-#[allow(dead_code)]
-struct Type0 {
-    table_type : u8,
-    len : u8,
-    handle : u16,
-    vendor : String,
-    bios_version : String,
-    bios_start_addr_seg : u16,
-    bios_rel_date : String,
-    bios_rom_sz : u8,
-    bios_char : u64,
-    bios_char_ext : u16,
-    system_bios_maj_rel : u8,
-    system_bios_min_rel : u8,
-    emb_ctrlr_fw_maj_rel : u8,
-    emb_ctrlr_fw_min_rel : u8,
-    ext_bios_rom_sz : u16
-}
-
 fn main() {
     let data = read_smbios();
 
@@ -39,7 +20,7 @@ fn main() {
     // Get strings for this Type 0 table
     let strings = tables::get_table_strings(data.as_slice(), beg + table_len as usize);
 
-    let _temp = Type0 {
+    let _temp = tables::Type0 {
         table_type : data[beg],
         len : table_len,
         handle : le_to_u16(&data[beg + 2 .. beg + 4]), 
