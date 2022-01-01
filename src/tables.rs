@@ -45,3 +45,20 @@ pub struct Type0 {
     pub emb_ctrlr_fw_min_rel : u8,
     pub ext_bios_rom_sz : u16
 }
+
+pub fn print(table : &Type0) {
+    println!("Table: Type0");
+    println!("\tType   : {}", table.table_type);
+    println!("\tLen    : {}", table.len);
+    println!("\tHandle : {}", table.handle);
+    println!("\tVendor : {}", table.vendor);
+    println!("\tBIOS Version : {}", table.bios_version);
+    println!("\tBIOSStartAddrSeg : {:#04x}", table.bios_start_addr_seg);
+    println!("\tBIOS Release Date : {}", table.bios_rel_date);
+    println!("\tBIOSRomSz : {:#02x}", table.bios_rom_sz);
+    println!("\tBIOSChar : {:#016x}", table.bios_char);
+    println!("\tSysBIOSMajRel : {}", table.system_bios_maj_rel);
+    println!("\tSysBIOSMinRel : {}", table.system_bios_min_rel);
+    println!("\tEmbCtrlrMajRel : {}", table.emb_ctrlr_fw_maj_rel);
+    println!("\tEmbCtrlrMinRel : {}", table.emb_ctrlr_fw_min_rel);
+}

@@ -1,3 +1,5 @@
+use std::fs;
+
 use crate::win_smbios::win_smbios::read_smbios;
 use crate::util::util::le_to_u16;
 use crate::util::util::le_to_u64;
@@ -6,11 +8,16 @@ mod win_smbios;
 mod util;
 mod tables;
 
+#[allow(unused_variables)] //temp
 fn main() {
+    test_json();
+
     let data = read_smbios();
 
     let maj = data[1];
     let min = data[2];
+
+    //println!("SMBIOS Version: {}.{}", maj, min);
 
     // Table begin
     // 1st byte of table data in structure returned by windows API
@@ -20,7 +27,7 @@ fn main() {
     // Get strings for this Type 0 table
     let strings = tables::get_table_strings(data.as_slice(), beg + table_len as usize);
 
-    let _temp = tables::Type0 {
+    let type0 = tables::Type0 {
         table_type : data[beg],
         len : table_len,
         handle : le_to_u16(&data[beg + 2 .. beg + 4]), 
@@ -38,6 +45,9 @@ fn main() {
         ext_bios_rom_sz : 0u16 // Dev box was SMBIOS 2.7 so ignoring for now
     };
 
+    // print type 0
+    tables::print(&type0);
+
     // TODO
     // 1. Get strings
     // 2. Get dependent fields (bios_char_ext byte count depends on table length)
@@ -47,24 +57,17 @@ fn main() {
     //   b. Don't copy bytes if possible while keeping compile time check
     // 5. Move table defs to input file
 
-    println!("SMBIOS Version: {}.{}", maj, min);
     // for b in data.iter() {
     //     println!("{:02x}", b);
     // }
 
-    // print type 0
-    println!("Table: Type0");
-    println!("\tType   : {}", _temp.table_type);
-    println!("\tLen    : {}", _temp.len);
-    println!("\tHandle : {}", _temp.handle);
-    println!("\tVendor : {}", _temp.vendor);
-    println!("\tBIOS Version : {}", _temp.bios_version);
-    println!("\tBIOSStartAddrSeg : {:#04x}", _temp.bios_start_addr_seg);
-    println!("\tBIOS Release Date : {}", _temp.bios_rel_date);
-    println!("\tBIOSRomSz : {:#02x}", _temp.bios_rom_sz);
-    println!("\tBIOSChar : {:#016x}", _temp.bios_char);
-    println!("\tSysBIOSMajRel : {}", _temp.system_bios_maj_rel);
-    println!("\tSysBIOSMinRel : {}", _temp.system_bios_min_rel);
-    println!("\tEmbCtrlrMajRel : {}", _temp.emb_ctrlr_fw_maj_rel);
-    println!("\tEmbCtrlrMinRel : {}", _temp.emb_ctrlr_fw_min_rel);
+}
+
+fn test_json() {
+    let path = "./defs.json";
+    let data = fs::read_to_string(path).expect("Unable to read file");
+    let json : serde_json::Value = serde_json::from_str(&data).expect("Unable to parse JSON");
+
+    println!("{}", json);
+    
 }

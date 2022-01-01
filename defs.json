@@ -1,0 +1,128 @@
+{
+    "SMBIOS major version": 3,
+    "SMBIOS minor version": 5,
+    "Definitions": [
+    	{
+    		"Type": 0,
+    		"Fields": [
+    			{
+    				"Name": "Length",
+    				"Offset": 1,
+    				"Type": "BYTE",
+    				"Display": "Hex",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "Handle",
+    				"Offset": 2,
+    				"Type": "WORD",
+    				"Display": "Hex",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "Vendor",
+    				"Offset": 4,
+    				"Type": "STRING",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "BIOS Version",
+    				"Offset": 5,
+    				"Type": "STRING",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "BIOS Starting Address Segment",
+    				"Offset": 6,
+    				"Type": "WORD",
+    				"Display": "Hex",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "BIOS Release Date",
+    				"Offset": 8,
+    				"Type": "STRING",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "BIOS ROM Size",
+    				"Offset": 9,
+    				"Type": "BYTE",
+    				"Display": "Special",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "BIOS Characteristics",
+    				"Offset": 10,
+    				"Type": "QWORD",
+    				"Display": "Hex",
+    				"TODO for bitfield - Display" : [
+    					"Reserved",
+    					"Reserved",
+    					"Unknown",
+    					"BIOS Characteristics are not supported",
+    					"ISA is supported",
+    					"MCA is supported"
+    				],
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 0
+    			},
+    			{
+    				"Name": "BIOS Characteristics Extension Bytes",
+    				"Offset": 12,
+    				"Type": "Variable",
+    				"Display": "Hex",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 4
+    			},
+    			{
+    				"Name": "System BIOS Major Release",
+    				"Offset": 14,
+    				"Type": "BYTE",
+    				"Display": "Dec",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 4
+    			},
+    			{
+    				"Name": "System BIOS Minor Release",
+    				"Offset": 15,
+    				"Type": "BYTE",
+    				"Display": "Dec",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 4
+    			},
+    			{
+    				"Name": "Embedded Controller Firmware Major Release",
+    				"Offset": 16,
+    				"Type": "BYTE",
+    				"Display": "Dec",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 4
+    			},
+    			{
+    				"Name": "Embedded Controller Firmware Minor Release",
+    				"Offset": 17,
+    				"Type": "BYTE",
+    				"Display": "Dec",
+    				"SMBIOS major version": 2,
+    				"SMBIOS minor version": 4
+    			},
+    			{
+    				"Name": "Extended BIOS ROM Size",
+    				"Offset": 18,
+    				"Type": "WORD",
+    				"Display": "Special",
+    				"SMBIOS major version": 3,
+    				"SMBIOS minor version": 1
+    			}
+    		]
+    	}
+    ]
+}
