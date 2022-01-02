@@ -4,6 +4,8 @@ use crate::win_smbios::win_smbios::read_smbios;
 use crate::util::util::le_to_u16;
 use crate::util::util::le_to_u64;
 
+use serde_json::json;
+
 mod win_smbios;
 mod util;
 mod tables;
@@ -48,13 +50,48 @@ fn read_defs_json(path: String) -> serde_json::Value {
 }
 
 fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Value {
-    let table_defs = defs["Tables"].as_array().unwrap();
+    let table_defs = defs["Tables"].as_object().unwrap();
     println!("DBG: # of table types defined: {}", table_defs.len());
 
     let maj = data[1];
     let min = data[2];
 
     println!("DBG: Actual SMBIOS Version: {}.{}", maj, min);
+
+    let mut table_start: usize = 8;
+    let data_size = data.len();
+
+    // Keep reading tables until
+    while table_start < data_size - 1 {
+        // Get common header fields
+        let table_type = data[table_start + tables::TYPE_OFFSET];
+        let _table_sz = data[table_start + tables::LEN_OFFSET];
+        let _handle = le_to_u16(&data[table_start + tables::HANDLE_OFFSET .. table_start + tables::HANDLE_OFFSET + 2]);
+
+        // Find definition for type
+        let def = &table_defs[&table_type.to_string()];
+
+        // create new Map<String, Value>> for table data
+        // (ideally create within top level container to avoid a copy)
+        let mut table = serde_json::Map::<String, serde_json::Value>::new();
+
+        // Add each field (as applicable by version) to table Value
+        for key in def["Fields"].as_array().unwrap() {
+            // TODO - get bytes based on field Type
+            let field_data = data[table_start + key["Offset"].as_u64().unwrap() as usize];
+
+            table.insert(
+                String::from(key["Name"].as_str().unwrap()), 
+                json!(field_data));
+        }
+
+        for (k, v) in table {
+            println!("{}: {}", k, v);
+        }
+
+        table_start = 1000000;
+    }
+
 
     // Table begin
     // 1st byte of table data in structure returned by windows API

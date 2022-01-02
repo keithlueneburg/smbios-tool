@@ -1,3 +1,7 @@
+pub const TYPE_OFFSET: usize = 0;
+pub const LEN_OFFSET: usize = 1;
+pub const HANDLE_OFFSET: usize = 2;
+
 // Gets the strings from a string section 
 // starting at position 'start' in 'data'
 pub fn get_table_strings(data: &[u8], start: usize) -> Vec<String> {
