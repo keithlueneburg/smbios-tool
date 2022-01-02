@@ -1,7 +1,7 @@
 {
     "SMBIOS major version": 3,
     "SMBIOS minor version": 5,
-    "Definitions": [
+    "Tables": [
     	{
     		"Type": 0,
     		"Fields": [
@@ -123,6 +123,9 @@
     				"SMBIOS minor version": 1
     			}
     		]
+    	},
+    	{
+    		"Type": 13
     	}
     ]
 }

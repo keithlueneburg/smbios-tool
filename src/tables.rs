@@ -46,6 +46,7 @@ pub struct Type0 {
     pub ext_bios_rom_sz : u16
 }
 
+#[allow(dead_code)]
 pub fn print(table : &Type0) {
     println!("Table: Type0");
     println!("\tType   : {}", table.table_type);

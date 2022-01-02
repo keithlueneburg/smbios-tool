@@ -10,14 +10,51 @@ mod tables;
 
 #[allow(unused_variables)] //temp
 fn main() {
-    test_json();
-
+    let defs = read_defs_json(String::from("./defs.json"));
     let data = read_smbios();
+    let smbios_table: serde_json::Value = parse_raw_smbios_data(data.as_slice(), defs);
+
+    // TODO
+    // 1. Get strings
+    // 2. Get dependent fields (bios_char_ext byte count depends on table length)
+    // 3. Only get fields supported by current SMBIOS version.. maybe.. Might make sense to wait for dynamic table definition and storage structure
+    // 4. 
+    //   a. Make to u16/u32/u64 function safer by copying to array
+    //   b. Don't copy bytes if possible while keeping compile time check
+    // 5. Move table defs to input file
+
+    // for b in data.iter() {
+    //     println!("{:02x}", b);
+    // }
+
+}
+
+// fn test_json() {
+//     let path = "./defs.json";
+//     let data = fs::read_to_string(path).expect("Unable to read file");
+//     let json : serde_json::Value = serde_json::from_str(&data).expect("Unable to parse JSON");
+
+//     println!("{}", json);
+//     println!("defs.json:\n==========\n\tSMBIOS version {}.{}", json["SMBIOS major version"], json["SMBIOS minor version"]);
+//     let arr = json["Tables"].as_array();
+//     for table_def in  arr.unwrap() {
+//         println!("\tType: {}", table_def["Type"]);
+//     }
+// }
+
+fn read_defs_json(path: String) -> serde_json::Value {
+    let data = fs::read_to_string(path).expect("Unable to read file");
+    return serde_json::from_str(&data).expect("Unable to parse JSON");
+}
+
+fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Value {
+    let table_defs = defs["Tables"].as_array().unwrap();
+    println!("DBG: # of table types defined: {}", table_defs.len());
 
     let maj = data[1];
     let min = data[2];
 
-    //println!("SMBIOS Version: {}.{}", maj, min);
+    println!("DBG: Actual SMBIOS Version: {}.{}", maj, min);
 
     // Table begin
     // 1st byte of table data in structure returned by windows API
@@ -25,7 +62,8 @@ fn main() {
     let table_len = data[beg + 1];
 
     // Get strings for this Type 0 table
-    let strings = tables::get_table_strings(data.as_slice(), beg + table_len as usize);
+    // TODO - get_table_strings needs to return the index of next structure start
+    let strings = tables::get_table_strings(data, beg + table_len as usize);
 
     let type0 = tables::Type0 {
         table_type : data[beg],
@@ -46,28 +84,8 @@ fn main() {
     };
 
     // print type 0
-    tables::print(&type0);
+    //tables::print(&type0);
 
-    // TODO
-    // 1. Get strings
-    // 2. Get dependent fields (bios_char_ext byte count depends on table length)
-    // 3. Only get fields supported by current SMBIOS version.. maybe.. Might make sense to wait for dynamic table definition and storage structure
-    // 4. 
-    //   a. Make to u16/u32/u64 function safer by copying to array
-    //   b. Don't copy bytes if possible while keeping compile time check
-    // 5. Move table defs to input file
-
-    // for b in data.iter() {
-    //     println!("{:02x}", b);
-    // }
-
-}
-
-fn test_json() {
-    let path = "./defs.json";
-    let data = fs::read_to_string(path).expect("Unable to read file");
-    let json : serde_json::Value = serde_json::from_str(&data).expect("Unable to parse JSON");
-
-    println!("{}", json);
-    
+    //stub
+    return serde_json::from_str("{}").unwrap();
 }
