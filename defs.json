@@ -59,7 +59,7 @@
                 },
                 {
                     "Name": "BIOS Characteristics Extension Bytes",
-                    "Offset": 12,
+                    "Offset": 18,
                     "Type": "Variable",
                     "Display": "Hex",
                     "SMBIOS major version": 2,
@@ -67,7 +67,7 @@
                 },
                 {
                     "Name": "System BIOS Major Release",
-                    "Offset": 14,
+                    "Offset": 20,
                     "Type": "BYTE",
                     "Display": "Dec",
                     "SMBIOS major version": 2,
@@ -75,7 +75,7 @@
                 },
                 {
                     "Name": "System BIOS Minor Release",
-                    "Offset": 15,
+                    "Offset": 21,
                     "Type": "BYTE",
                     "Display": "Dec",
                     "SMBIOS major version": 2,
@@ -83,7 +83,7 @@
                 },
                 {
                     "Name": "Embedded Controller Firmware Major Release",
-                    "Offset": 16,
+                    "Offset": 22,
                     "Type": "BYTE",
                     "Display": "Dec",
                     "SMBIOS major version": 2,
@@ -91,7 +91,7 @@
                 },
                 {
                     "Name": "Embedded Controller Firmware Minor Release",
-                    "Offset": 17,
+                    "Offset": 23,
                     "Type": "BYTE",
                     "Display": "Dec",
                     "SMBIOS major version": 2,
@@ -99,7 +99,7 @@
                 },
                 {
                     "Name": "Extended BIOS ROM Size",
-                    "Offset": 18,
+                    "Offset": 24,
                     "Type": "WORD",
                     "Display": "Special",
                     "SMBIOS major version": 3,
