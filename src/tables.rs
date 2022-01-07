@@ -4,11 +4,21 @@ pub const HANDLE_OFFSET: usize = 2;
 
 // Gets the strings from a string section 
 // starting at position 'start' in 'data'
+
+// TODO - seems to break on first Type32 table - I suspect it's the first table with an empty string section
 pub fn get_table_strings(data: &[u8], start: usize, next_table_start: &mut usize) -> Vec<String> {
     let mut pos = start;
 
     let mut buf = String::from("");
     let mut strings : Vec<String> = Vec::new();
+
+    // If no string section, return pos + 2 to skip 
+    // both terminating 0's
+    if data[pos] == 0x00 && data[pos+1] == 0x00 {
+        pos += 2;
+        *next_table_start = pos;
+        return strings;
+    }
 
     let mut ch = data[pos];
     while ch != 0x00 {
