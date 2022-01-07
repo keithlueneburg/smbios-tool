@@ -64,18 +64,30 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
 
     // Keep reading tables until
     while table_start < data_size - 1 {
+        println!("DBG: Table start = {}", table_start);
         // Get common header fields
         let table_type = data[table_start + tables::TYPE_OFFSET];
-        let table_sz = data[table_start + tables::LEN_OFFSET];
+        let table_sz = usize::from(data[table_start + tables::LEN_OFFSET]);
         let _handle = le_to_u16(&data[table_start + tables::HANDLE_OFFSET .. table_start + tables::HANDLE_OFFSET + 2]);
 
         // Get strings for this table
         // TODO - get_table_strings needs to return the index of next structure start
-        let strings = tables::get_table_strings(data, table_start + table_sz as usize);
+        let mut next_table_start = 0usize;
+        let strings = tables::get_table_strings(data, table_start + table_sz, &mut next_table_start);
+        println!("DBG: Next table start = {}", next_table_start);
 
-        // Find definition for type
-        let def = &table_defs[&table_type.to_string()];
-
+        let mut def = &json!(null);
+        // Look for definition for type
+        if table_defs.contains_key(&table_type.to_string()) {
+            println!("Found def for {}", table_type);
+            def = &table_defs[&table_type.to_string()];
+        }
+        
+        if def.is_null() {
+            println!("No table type definition found for Type {}", table_type);
+            table_start = next_table_start;
+            continue;
+        }
         // create new Map<String, Value>> for table data
         // (ideally create within top level container to avoid a copy)
         let mut table = serde_json::Map::<String, serde_json::Value>::new();
@@ -128,7 +140,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
         //     println!("{}: {}", k, v);
         // }
 
-        table_start = 1000000;
+        table_start = next_table_start;
     }
 
 

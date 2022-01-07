@@ -4,7 +4,7 @@ pub const HANDLE_OFFSET: usize = 2;
 
 // Gets the strings from a string section 
 // starting at position 'start' in 'data'
-pub fn get_table_strings(data: &[u8], start: usize) -> Vec<String> {
+pub fn get_table_strings(data: &[u8], start: usize, next_table_start: &mut usize) -> Vec<String> {
     let mut pos = start;
 
     let mut buf = String::from("");
@@ -27,6 +27,11 @@ pub fn get_table_strings(data: &[u8], start: usize) -> Vec<String> {
             ch = data[pos];
         }
     }
+
+    // At end of loop, pos will be the 2nd terminating 00h byte,
+    // increment to next table start
+    pos += 1;
+    *next_table_start = pos;
 	return strings;
 }
 
