@@ -64,7 +64,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
 
     // Keep reading tables until
     while table_start < data_size - 1 {
-        println!("DBG: Table start = {}", table_start);
+        //println!("DBG: Table start = {}", table_start);
         // Get common header fields
         let table_type = data[table_start + tables::TYPE_OFFSET];
         let table_sz = usize::from(data[table_start + tables::LEN_OFFSET]);
@@ -74,7 +74,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
         // TODO - get_table_strings needs to return the index of next structure start
         let mut next_table_start = 0usize;
         let strings = tables::get_table_strings(data, table_start + table_sz, &mut next_table_start);
-        println!("DBG: Next table start = {}", next_table_start);
+        //println!("DBG: Next table start = {}", next_table_start);
 
         let mut def = &json!(null);
         // Look for definition for type
@@ -84,7 +84,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
         }
         
         if def.is_null() {
-            println!("No table type definition found for Type {}", table_type);
+            //println!("No table type definition found for Type {}", table_type);
             table_start = next_table_start;
             continue;
         }
@@ -99,34 +99,52 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
             let field_name = String::from(key["Name"].as_str().unwrap());
             let field_type = String::from(key["Type"].as_str().unwrap());
             let field_offset = key["Offset"].as_u64().unwrap() as usize;
+            let field_display = key["Display"].as_str();
+
+            let mut field_data: serde_json::Value = serde_json::from_str("{}").unwrap();
 
             if maj > field_major || (maj == field_major && min >= field_minor) {
                 //let field_value = serde_json::from_str("{}");
                 // TODO - get bytes based on field Type
-                match field_type.as_str() {
+                field_data = match field_type.as_str() {
                     "BYTE" => {
-                        let field_data = data[table_start + field_offset];
-                        println!("{}: 0x{:02X}", field_name, field_data);
+                        match field_display {
+                            Some("Dec") => {
+                                data[table_start + field_offset].into()
+                            },
+                            Some("Hex") => {
+                                format!("0x{:02X}",data[table_start + field_offset]).into()
+                            }
+                            Some("Special") => {
+                                println!("DBG - Not implemented");
+                                "SPECIAL DISPLAY - NOT IMPLEMENTED".into()
+                            }
+                            _ => {
+                                panic!("Unknown field Display type");
+                            }
+                        }                    
                     },
                     "WORD" => {
-                        let field_data = le_to_u16(&data[table_start + field_offset .. table_start + field_offset + 2]);
-                        println!("{}: 0x{:04X}", field_name, field_data);
+                        //println!("{}: 0x{:04X}", field_name, field_data);
+                        format!("0x{:04X}",le_to_u16(&data[table_start + field_offset .. table_start + field_offset + 2])).into()
                     },
 
                     "QWORD" => {
-                        let field_data = le_to_u64(&data[table_start + field_offset .. table_start + field_offset + 8]);
-                        println!("{}: 0x{:016X}", field_name, field_data);
+                        //println!("{}: 0x{:016X}", field_name, field_data);
+                        format!("0x{:08X}",le_to_u64(&data[table_start + field_offset .. table_start + field_offset + 8])).into()
                     },
                     "STRING" => {
                         let str_number = usize::from(data[table_start + field_offset]);
-                        println!("{}: {}", field_name, strings[str_number - 1]);
+                        //println!("{}: {}", field_name, strings[str_number - 1]);
+                        strings[str_number - 1].clone().into()
                     }
                     _ => {
                         println!("Error - Unsupported field type");
+                        "FAILED TO PARSE".into()
                     }
-                }
+                };
                 
-                let field_data = data[table_start + field_offset];
+                //println!("inserting {} - {}", field_name, field_data);
                 table.insert(
                     field_name, 
                     json!(field_data));
@@ -136,9 +154,9 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
             }
         }
 
-        // for (k, v) in table {
-        //     println!("{}: {}", k, v);
-        // }
+        for (k, v) in table {
+            println!("{}: {}", k, v);
+        }
 
         table_start = next_table_start;
     }
