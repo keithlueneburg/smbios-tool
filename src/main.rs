@@ -118,7 +118,21 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
                                 format!("0x{:02X}",data[table_start + field_offset]).into()
                             },
                             Some("Special") => {
-                                "SPECIAL DISPLAY - NOT IMPLEMENTED".into()
+                                let decode_key = format!("{}:{}", table_type, field_name);
+                                match decode_key.as_str() {
+                                    "0:BIOS ROM Size" => {
+                                        let byte = data[table_start + field_offset];
+                                        if  byte == 0xFF {
+                                            "> 16MB".into()
+                                        }
+                                        else {
+                                            format!("{}K", ((byte as u32 + 1u32) * 64)).into()
+                                        }
+                                    }
+                                    _ => {
+                                        panic!("SPECIAL DISPLAY - NOT IMPLEMENTED ({}:{})", table_type, field_name);
+                                    }
+                                }
                             },
                             _ => {
                                 panic!("Unknown field Display type {}", field_display.unwrap());
