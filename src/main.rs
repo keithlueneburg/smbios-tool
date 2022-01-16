@@ -51,12 +51,12 @@ fn read_defs_json(path: String) -> serde_json::Value {
 
 fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Value {
     let table_defs = defs["Tables"].as_object().unwrap();
-    println!("DBG: # of table types defined: {}", table_defs.len());
+    //println!("DBG: # of table types defined: {}", table_defs.len());
 
     let maj = u64::from(data[1]);
     let min = u64::from(data[2]);
 
-    println!("DBG: Actual SMBIOS Version: {}.{}", maj, min);
+    //println!("DBG: Actual SMBIOS Version: {}.{}", maj, min);
 
     let mut table_start: usize = 8;
     let data_size = data.len();
@@ -65,6 +65,9 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
     while table_start < data_size - 1 {
         // Get common header fields
         let table_type = data[table_start + tables::TYPE_OFFSET];
+
+        println!("\n==== Table Type {} ====", table_type);
+
         let table_sz = usize::from(data[table_start + tables::LEN_OFFSET]);
         let _handle = le_to_u16(&data[table_start + tables::HANDLE_OFFSET .. table_start + tables::HANDLE_OFFSET + 2]);
 
@@ -76,7 +79,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
         // Look for definition for type
         let def;
         if table_defs.contains_key(&table_type.to_string()) {
-            println!("Found def for {}", table_type);
+            //println!("DBG: Found def for {}", table_type);
             def = &table_defs[&table_type.to_string()];
         }
         else {
@@ -150,7 +153,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
                         strings[str_number - 1].clone().into()
                     },
                     _ => {
-                        println!("Error - Unsupported field type");
+                        println!("Error - Unsupported field type: \"{}\" (Type {}:\"{}\")", field_type, table_type, field_name);
                         "FAILED TO PARSE".into()
                     }
                 };
@@ -165,7 +168,7 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
         }
 
         for (k, v) in table {
-            println!("{}: {}", k, v);
+            println!("\t{}: {}", k, v);
         }
 
         table_start = next_table_start;
