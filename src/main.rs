@@ -95,8 +95,8 @@ fn parse_raw_smbios_data(data: &[u8], defs: serde_json::Value) -> serde_json::Va
 
         // Add each field (as applicable by version) to table Value
         for key in def["Fields"].as_array().unwrap() {
-            let field_major = key["SMBIOS major version"].as_u64().unwrap();
-            let field_minor = key["SMBIOS minor version"].as_u64().unwrap();
+            let field_major = key["Major"].as_u64().unwrap();
+            let field_minor = key["Minor"].as_u64().unwrap();
             let field_name = String::from(key["Name"].as_str().unwrap());
             let field_type = String::from(key["Type"].as_str().unwrap());
             let field_offset = key["Offset"].as_u64().unwrap() as usize;
